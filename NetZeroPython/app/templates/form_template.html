@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+
+{% block title %}Personal emissions tracker{% endblock %}
+
+{% block content %}
+    <form method = "POST">
+        {{ form.hidden_tag() }}
+
+        {{ form.name.label }}
+        {{ form.name() }}
+
+        {{ form.submit() }}
+    </form>
+
+{% endblock %}

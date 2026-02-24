@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% block title %}Commute Tracker{% endblock %}
+
+{% block content %}
+    <br><br>
+    <form method = "POST">
+        {{ form.hidden_tag() }}
+
+        {{ form.commute_type.label }}
+        {{ form.commute_type() }}
+
+        {{ form.commute_distance.label }}
+        {{ form.commute_distance() }}
+
+        {{ form.submit() }}
+    </form>
+    <br><br>
+    {% if summary %}
+        <h2>Commute Summary</h2>
+        <p><strong>Commute type:</strong> {{ summary.type }}</p>
+        <p><strong>Distance:</strong> {{ summary.distance }}km</p>
+        <p><strong>CO₂ emitted:</strong> {{ summary.emissions }}g</p>
+        {% if summary.type != "car" %}
+            <p>If you had driven, emissions would be {{ summary.car_emissions }}g.</p>
+        {% endif %}
+    {% endif %}
+{% endblock %}

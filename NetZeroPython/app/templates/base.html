@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %} Zero.net {% endblock %}</title>
+
+</head>
+<body>
+    <header>
+        <h1>Zero.net</h1>
+        <nav>
+            <a href="{{ url_for('home') }}">Home</a>
+            <a href="{{ url_for('personal') }}">Personal</a>
+            <a href="{{ url_for('business') }}">Business</a>
+            <a href="{{ url_for('gov') }}">Government</a>
+        </nav>
+    </header>
+
+    <section>
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                <ul>
+                    {% for message in messages %}
+                        <li>{{ message }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        {% endwith %}
+    </section>
+
+    <main>
+        {% block content %}
+        {% endblock %}
+    </main>
+
+    <footer>
+        <hr>
+        <p>Zero.net</p>
+    </footer>
+</body>
+</html>
