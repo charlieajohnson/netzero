@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+
+{% block title %} Government Dashboard {% endblock %}
+
+{% block content %}
+    <hr>
+    <h2>Government Dashboard</h2>
+    <p><strong>Period:</strong> {{ data.period }}</p>
+
+    <h3>Summary</h3>
+    <ul>
+      <li>Latest week total : {{ "%.0f"|format(data.summary.latest_week_total) }} <strong>kgCO2e</strong></li>
+      <li>Daily average: {{ "%.0f"|format(data.summary.daily_avg)  }} <strong>kgCO2e</strong></li>
+    </ul>
+    <hr>
+    <h3>Emissions by Sector</h3>
+    <canvas id="sectorChart" width="700" height="300"></canvas>
+
+    <h3>Emissions Over Time</h3>
+    <canvas id="trendChart" width="700" height="300"></canvas>
+
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script>
+    const sectorData = {{ data.emissions_by_sector | tojson }};
+    const trendData  = {{ data.trend | tojson }};
+
+    new Chart(document.getElementById('sectorChart'), {
+      type: 'bar',
+      data: {
+        labels: sectorData.labels,
+        datasets: [{ label: 'kgCO2e', data: sectorData.values }]
+      }
+    });
+
+    new Chart(document.getElementById('trendChart'), {
+      type: 'line',
+      data: {
+        labels: trendData.labels,
+        datasets: [{ label: 'kgCO2e', data: trendData.values }]
+      }
+    });
+  </script>
+{% endblock %}
