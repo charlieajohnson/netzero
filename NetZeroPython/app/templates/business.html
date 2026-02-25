@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+{% block title %}Business Energy Tracker{% endblock %}
+
+{% block content %}
+<h1>Business Energy Tracker</h1>
+<p>Log your supermarket’s energy usage over time, what it’s used for, and cost.</p>
+
+{% if business_name %}
+  <p><strong>Showing logs for:</strong> {{ business_name }}</p>
+{% else %}
+  <p><strong>Tip:</strong> Enter a business name to start tracking (e.g. “Ed’s Supermarket”).</p>
+{% endif %}
+
+<hr>
+
+<h2>Add a log</h2>
+<form method="POST">
+  {{ form.hidden_tag() }}
+
+  <p>
+    {{ form.business_name.label }}<br>
+    {{ form.business_name }}
+  </p>
+
+  <p>
+    {{ form.log_date.label }}<br>
+    {{ form.log_date }}
+  </p>
+
+  <p>
+    {{ form.use_for.label }}<br>
+    {{ form.use_for }}
+  </p>
+
+  <p>
+    {{ form.kwh.label }}<br>
+    {{ form.kwh }}
+  </p>
+
+  <p>
+    {{ form.cost.label }}<br>
+    {{ form.cost }}
+  </p>
+
+  {{ form.submit }}
+</form>
+
+<hr>
+
+<h2>Logs</h2>
+<p>
+  <strong>Total kWh:</strong> {{ total_kwh }}
+  &nbsp; | &nbsp;
+  <strong>Total cost:</strong> £{{ total_cost }}
+</p>
+
+<table border="1" cellpadding="6">
+  <tr>
+    <th>Date</th>
+    <th>Business</th>
+    <th>Used for</th>
+    <th>kWh</th>
+    <th>Cost (£)</th>
+    <th>Action</th>
+  </tr>
+
+  {% for log in logs %}
+  <tr>
+    <td>{{ log.log_date }}</td>
+    <td>{{ log.business_name }}</td>
+    <td>{{ log.use_for }}</td>
+    <td>{{ log.kwh }}</td>
+    <td>{{ log.cost }}</td>
+    <td>
+      <a href="{{ url_for('delete_energy_log', log_id=log.id) }}">Delete</a>
+    </td>
+  </tr>
+  {% endfor %}
+</table>
+
+{% endblock %}
