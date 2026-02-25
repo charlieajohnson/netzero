@@ -14,4 +14,18 @@ class CommuteForm(FlaskForm):
             ],
     )
     commute_distance = FloatField("Distance (km)")
+
     submit = SubmitField("Submit")
+
+class EnergyLogForm(FlaskForm):
+    business_name = StringField(
+        "Business Name",
+        validators=[DataRequired(), Length(max=80)]
+    )
+
+    log_date = DateField("Date", validators=[DataRequired()], default=date.today)
+    use_for = StringField("Used for (e.g. freezers)", validators=[DataRequired(), Length(max=80)])
+    kwh = FloatField("Energy (kWh)", validators=[DataRequired(), NumberRange(min=0)])
+    cost = FloatField("Cost (£)", validators=[DataRequired(), NumberRange(min=0)])
+
+    submit = SubmitField("Add log")
