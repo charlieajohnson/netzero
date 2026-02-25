@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+{% block title %}Update Commute{% endblock %}
+
+{% block content %}
+    <br><br>
+    <form method = "POST">
+        {{ form.hidden_tag() }}
+
+        {{ form.commute_method.label }}
+        {{ form.commute_method() }}
+
+        {{ form.distance.label }}
+        {{ form.distance() }}
+
+        {{ form.submit() }}
+    </form>
+
+    <a href="{{ url_for('home') }}">Cancel</a>
+
+{% endblock %}

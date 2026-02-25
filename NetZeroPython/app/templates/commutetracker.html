@@ -7,22 +7,26 @@
     <form method = "POST">
         {{ form.hidden_tag() }}
 
-        {{ form.commute_type.label }}
-        {{ form.commute_type() }}
+        {{ form.commute_method.label }}
+        {{ form.commute_method() }}
 
-        {{ form.commute_distance.label }}
-        {{ form.commute_distance() }}
+        {{ form.distance.label }}
+        {{ form.distance() }}
 
         {{ form.submit() }}
     </form>
-    <br><br>
-    {% if summary %}
-        <h2>Commute Summary</h2>
-        <p><strong>Commute type:</strong> {{ summary.type }}</p>
-        <p><strong>Distance:</strong> {{ summary.distance }}km</p>
-        <p><strong>CO₂ emitted:</strong> {{ summary.emissions }}g</p>
-        {% if summary.type != "car" %}
-            <p>If you had driven, emissions would be {{ summary.car_emissions }}g.</p>
-        {% endif %}
-    {% endif %}
+
+    <ul>
+        {% for commute in commute_logs %}
+            <li>
+                {{ commute.commute_method }}
+                {{ commute.distance }}km
+                {{ commute.emissions }}g CO2
+                <a href="{{ url_for('delete_commute_log', commute_id=commute.id) }}">Delete Log</a>
+                <a href="{{ url_for('update_commute_log', commute_id=commute.id) }}">Update Log</a>
+            </li>
+        {% else %}
+            <li>No commutes saved yet!</li>
+        {% endfor %}
+    </ul>
 {% endblock %}

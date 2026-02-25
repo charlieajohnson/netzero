@@ -1,10 +1,13 @@
 from flask import Flask, flash, redirect, url_for, request, render_template, request, session
 from flask_wtf import FlaskForm
 from wtforms import SelectField, SubmitField
-from app import os
-from app import json
+
+import os
+import json
 from app import app
-from app.forms import CommuteForm
+from app import db
+from app.forms import CommuteForm, EnergyLogForm
+from app.models import CommuteLog, EnergyLog
 
 @app.route('/')
 def home():
@@ -15,21 +18,59 @@ def home():
 def personal():
     return render_template("personal.html")
 
-@app.route('/trackcommute', methods = ["GET", "POST"])
+@app.route('/personal/trackcommute', methods = ["GET", "POST"])
 def commutetracker():
     carbon_per_km = {"walk": 0, "cycle": 0, "car": 200, "train": 32, "bus": 75}
     form = CommuteForm()
     summary = None
+
     if form.validate_on_submit():
-        commute_type = form.commute_type.data
-        distance = form.commute_distance.data
-        emissions = distance * carbon_per_km[commute_type]
-        summary = {"type": commute_type,
+        commute_method = str(form.commute_method.data)
+        distance = float(form.distance.data)
+        emissions = float(distance * carbon_per_km[commute_method])
+        summary = {"type": commute_method,
                    "distance": distance,
                    "emissions": emissions}
-        if commute_type != "car":
+        if commute_method != "car":
             summary["car_emissions"] = distance * carbon_per_km["car"]
-    return render_template("commutetracker.html", form = form, summary = summary)
+
+        # Submit log of commute to database.
+        log = CommuteLog(commute_method = commute_method,
+                         distance = distance,
+                         emissions = emissions)
+        db.session.add(log)
+        db.session.commit()
+        flash(f'Commute successfully logged!')
+
+        return redirect(url_for('personal'))
+
+    commute_logs = CommuteLog.query.all()
+    return render_template("commutetracker.html",
+                           form = form,
+                           commute_logs = commute_logs,
+                           summary = summary)
+
+@app.route('/personal/trackcommute/delete/<int:commute_id>', methods = ['GET', 'POST'])
+def delete_commute_log(commute_id):
+    commute = CommuteLog.query.get_or_404(commute_id)
+    db.session.delete(commute)
+    db.session.commit()
+    return redirect(url_for('home'))
+
+@app.route('/personal/trackcommute/update/<int:commute_id>', methods = ['GET', 'POST'])
+def update_commute_log(commute_id):
+    carbon_per_km = {"walk": 0, "cycle": 0, "car": 200, "train": 32, "bus": 75}
+    commute = CommuteLog.query.get_or_404(commute_id)
+    form = CommuteForm(obj=commute)
+
+    if form.validate_on_submit():
+        commute.commute_method = form.commute_method.data
+        commute.distance = form.distance.data
+        commute.emissions = float(commute.distance * carbon_per_km[commute.commute_method])
+        db.session.commit()
+        return redirect(url_for('home'))
+
+    return render_template('updatecommute.html', form = form)
 
 # Ed's pages
 @app.route("/business", methods=["GET", "POST"])
@@ -118,5 +159,4 @@ def gov():
     }
 
     return render_template("gov.html", data=data)
-
 

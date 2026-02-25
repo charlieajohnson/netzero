@@ -1,7 +1,18 @@
+from app import db
 import sqlalchemy as sa
 import sqlalchemy.orm as so
 from datetime import date
-from app import db
+
+
+class CommuteLog(db.Model):
+    id: so.Mapped[int] = so.mapped_column(primary_key=True)
+    commute_method: so.Mapped[str] = so.mapped_column(index=True)
+    distance: so.Mapped[float] = so.mapped_column(index=True)
+    emissions: so.Mapped[float] = so.mapped_column(index=True)
+
+    def __repr__(self):
+        return f'<CommuteLog {self.id}, {self.commute_method}, {self.emissions}'
+
 
 class EnergyLog(db.Model):
     id: so.Mapped[int] = so.mapped_column(primary_key=True)
