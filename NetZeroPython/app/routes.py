@@ -38,4 +38,31 @@ def business():
 # Tannbir's pages
 @app.route('/gov')
 def gov():
-    return "For the government."
+    app_root = os.path.dirname(__file__)
+
+    with open(os.path.join(app_root, "data/emissions_sector.json"), "r") as f:
+        sector_data = json.load(f)
+
+    with open(os.path.join(app_root, "data/emissions_trend.json"), "r") as f:
+        trend_data = json.load(f)
+
+    sectors = sector_data["sectors"]
+    trend = trend_data["trend"]
+
+    sector_labels = [s["sector"] for s in sectors]
+    sector_values = [float(s["total"]) for s in sectors]
+
+    trend_labels = [t["week"] for t in trend]
+    trend_values = [float(t["total"]) for t in trend]
+
+    latest_week_total = trend_values[-1] if trend_values else 0.0
+    daily_avg = latest_week_total / 7.0 if latest_week_total else 0.0
+
+    data = {
+        "period": sector_data.get("period", ""),
+        "emissions_by_sector": {"labels": sector_labels, "values": sector_values},
+        "trend": {"labels": trend_labels, "values": trend_values},
+        "summary": {"latest_week_total": latest_week_total, "daily_avg": daily_avg}
+    }
+
+    return render_template("gov.html", data=data)
