@@ -31,9 +31,60 @@ def commutetracker():
     return render_template("commutetracker.html", form = form, summary = summary)
 
 # Ed's pages
-@app.route('/business')
+@app.route("/business", methods=["GET", "POST"])
 def business():
-    return "For businesses."
+    form = EnergyLogForm()
+
+    # Persist which business we're viewing via URL querystring
+    business_name = request.args.get("business_name", "").strip()
+
+    # Bonus: pre-fill business name if coming from URL
+    if business_name and request.method == "GET":
+        form.business_name.data = business_name
+
+    if form.validate_on_submit():
+        log = EnergyLog(
+            business_name=form.business_name.data.strip(),
+            log_date=form.log_date.data,
+            use_for=form.use_for.data.strip(),
+            kwh=float(form.kwh.data),
+            cost=float(form.cost.data),
+        )
+        db.session.add(log)
+        db.session.commit()
+        flash("Energy log added.")
+
+        # Redirect with business_name in the URL so it stays selected after POST
+        return redirect(url_for("business", business_name=log.business_name))
+
+    # Build query dynamically (search-style)
+    query = EnergyLog.query
+    if business_name:
+        query = query.filter(EnergyLog.business_name.ilike(f"%{business_name}%"))
+
+    logs = query.order_by(EnergyLog.log_date.desc()).all()
+
+    total_kwh = sum(l.kwh for l in logs) if logs else 0
+    total_cost = sum(l.cost for l in logs) if logs else 0
+
+    return render_template(
+        "business.html",
+        form=form,
+        logs=logs,
+        total_kwh=total_kwh,
+        total_cost=total_cost,
+        business_name=business_name
+    )
+
+
+@app.route("/business/logs/<int:log_id>/delete")
+def delete_energy_log(log_id: int):
+    log = EnergyLog.query.get_or_404(log_id)
+    business_name = log.business_name
+    db.session.delete(log)
+    db.session.commit()
+    flash("Log deleted.")
+    return redirect(url_for("business", business_name=business_name))
 
 # Tannbir's pages
 @app.route('/gov')
@@ -66,3 +117,4 @@ def gov():
     }
 
     return render_template("gov.html", data=data)
+
