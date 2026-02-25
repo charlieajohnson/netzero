@@ -1,0 +1,9 @@
+{
+  "trend": [
+    {"week": "Week 1", "total": 1900000},
+    {"week": "Week 2", "total": 1750000},
+    {"week": "Week 3", "total": 2000000},
+    {"week": "Week 4", "total": 1950000},
+    {"week": "Week 5", "total": 2200000}
+  ]
+}

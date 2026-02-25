@@ -1,0 +1,9 @@
+{
+  "period": "Week 5",
+  "sectors": [
+    {"sector": "Transport", "total": 800000},
+    {"sector": "Electricity", "total": 950000},
+    {"sector": "Heating", "total": 450000},
+    {"sector": "Industry", "total": 600000}
+  ]
+}
