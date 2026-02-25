@@ -1,7 +1,7 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, SelectField, TextAreaField, FloatField, SubmitField, DateField
 from wtforms.validators import DataRequired, Length, NumberRange
-
+from datetime import date
 class CommuteForm(FlaskForm):
     commute_type = SelectField(
         "Select your commute method",
@@ -29,4 +29,5 @@ class EnergyLogForm(FlaskForm):
     cost = FloatField("Cost (£)", validators=[DataRequired(), NumberRange(min=0)])
 
     submit = SubmitField("Add log")
+
 
