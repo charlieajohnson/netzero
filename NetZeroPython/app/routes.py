@@ -36,10 +36,10 @@ def commutetracker():
 def business():
     form = EnergyLogForm()
 
-    # Persist which business we're viewing via URL querystring
+    
     business_name = request.args.get("business_name", "").strip()
 
-    # Bonus: pre-fill business name if coming from URL
+    
     if business_name and request.method == "GET":
         form.business_name.data = business_name
 
@@ -55,10 +55,10 @@ def business():
         db.session.commit()
         flash("Energy log added.")
 
-        # Redirect with business_name in the URL so it stays selected after POST
+        
         return redirect(url_for("business", business_name=log.business_name))
 
-    # Build query dynamically (search-style)
+    
     query = EnergyLog.query
     if business_name:
         query = query.filter(EnergyLog.business_name.ilike(f"%{business_name}%"))
@@ -118,5 +118,6 @@ def gov():
     }
 
     return render_template("gov.html", data=data)
+
 
 
